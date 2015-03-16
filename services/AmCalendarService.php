@@ -137,25 +137,22 @@ class AmCalendarService extends BaseApplicationComponent
         $events = $this->getEvents($fromDate, false);
 
         if (count($events)) {
-            $fromYear = date('Y');
-            $toYear = date('Y');
-            $fromMonth = date('n');
-            $toMonth = date('n');
-            foreach ($events as $year => $months) {
-                if (current($events) == $months) {
-                    $fromYear = $year;
-                }
-                if (end($events) == $months) {
-                    $toYear = $year;
-                }
-                foreach ($months as $month => $days) {
-                    if (current($months) == $days) {
-                        $fromMonth = $month;
-                    }
-                    if (end($months) == $days) {
-                        $toMonth = $month;
-                    }
-                }
+            $fromYear = $this->_getYearOrMonth($events);
+            $toYear = $this->_getYearOrMonth($events, true, false);
+            $fromMonth = $this->_getYearOrMonth($events, false);
+            $toMonth = $this->_getYearOrMonth($events, false, false);
+
+            if (! $fromYear) {
+                $fromYear = date('Y');
+            }
+            if (! $toYear) {
+                $toYear = date('Y');
+            }
+            if (! $fromMonth) {
+                $fromMonth = date('n');
+            }
+            if (! $toMonth) {
+                $toMonth = date('n');
             }
 
             $grid = $this->getGrid(mktime(0, 0, 0, $fromMonth, 1, $fromYear), mktime(0, 0, 0, $toMonth, 1, $toYear));
@@ -209,5 +206,41 @@ class AmCalendarService extends BaseApplicationComponent
             'firstDay' => $timestampInformation['wday'],
             'lastDay' => $dateTime->format('t')
         );
+    }
+
+    /**
+     * Get a year or month from an events array.
+     *
+     * @param array $events
+     * @param bool  $findYear
+     * @param bool  $findFirst
+     *
+     * @return bool|int
+     */
+    private function _getYearOrMonth($events, $findYear = true, $findFirst = true)
+    {
+        if ($findFirst) {
+            ksort($events);
+        }
+        else {
+            krsort($events);
+        }
+        foreach ($events as $year => $months) {
+            if ($findYear) {
+                return $year;
+            }
+            else {
+                if ($findFirst) {
+                    ksort($months);
+                }
+                else {
+                    krsort($months);
+                }
+                foreach ($months as $month => $days) {
+                    return $month;
+                }
+            }
+        }
+        return false;
     }
 }
