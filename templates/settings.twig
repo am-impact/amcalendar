@@ -1,0 +1,49 @@
+{% import "_includes/forms" as forms %}
+
+{% set sectionInput %}
+    <div class="select">
+        <select id="section" name="section">
+            <option value="*">{{ "All"|t }}</option>
+            {% for section in craft.sections.getAllSections() %}
+                {% if section.type != 'single' %}
+                    <option value="{{ section.id }}"{% if section.id == settings.section %} selected{% endif %}>{{ section.name|t }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+{% endset %}
+
+{{ forms.field({
+    label: "Section"|t,
+    instructions: "Which section do you want to pull entries from?"|t,
+    id: 'section',
+    first: true
+}, sectionInput) }}
+
+<hr>
+
+{{ forms.lightswitchField({
+    id: 'multipleDates',
+    name: 'multipleDates',
+    label: 'Multiple dates per entry'|t,
+    on: settings.multipleDates,
+    instructions: 'If you have multiple entries, the field below will be used to find the dates. Uses postDate when disabled.'
+}) }}
+
+{{ forms.selectField({
+    id: 'datesField',
+    name: 'datesField',
+    label: 'Multiple dates field',
+    options: fields,
+    value: settings.datesField,
+    instructions: 'Which field has the dates?'
+}) }}
+
+{{ forms.textField({
+    id: 'dateHandle',
+    name: 'dateHandle',
+    label: 'Date handle within chosen field',
+    value: settings.dateHandle,
+    size: 25,
+    instructions: 'This is where you need to place the handle that will contain the date, based on the field you have chosen.'
+}) }}
