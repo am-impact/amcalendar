@@ -97,6 +97,7 @@ class AmCalendarService extends BaseApplicationComponent
         }
         $criteria->status = array('live', 'pending');
         $criteria->limit = null;
+        $criteria->order = 'title asc';
         $entries = $criteria->find();
 
         // Add entries to proper year and month
