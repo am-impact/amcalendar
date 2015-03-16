@@ -11,7 +11,8 @@ class AmCalendarTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            'eventsForDate' => new \Twig_Filter_Method($this, 'eventsForDate')
+            'eventsForDate' => new \Twig_Filter_Method($this, 'eventsForDate'),
+            'firstEvent' => new \Twig_Filter_Method($this, 'firstEvent')
         );
     }
 
@@ -33,5 +34,27 @@ class AmCalendarTwigExtension extends \Twig_Extension
         else {
             return false;
         }
+    }
+
+    /**
+     * Get the first event.
+     *
+     * @param array $events
+     *
+     * @return bool|array
+     */
+    public function firstEvent($events)
+    {
+        ksort($events);
+        foreach ($events as $year => $months) {
+            ksort($months);
+            foreach ($months as $month => $days) {
+                ksort($days);
+                foreach ($days as $key => $dayEvents) {
+                    return count($dayEvents) ? $dayEvents[0] : false;
+                }
+            }
+        }
+        return false;
     }
 }
